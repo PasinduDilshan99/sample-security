@@ -27,23 +27,33 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   const fetchMe = async () => {
-    try {
-      const res = await fetch("http://localhost:8080/api/v0/user/me", {
-        method: "GET",
-        credentials: "include",
-      });
+    console.log("====================================");
+    console.log("AAs");
+    console.log("====================================");
+    const code = sessionStorage.getItem("uniqueCode");
 
-      if (res.ok) {
-        const data = await res.json();
-        setUser({
-          id: data.id,
-          username: data.username,
-          roles: data.roles,
-          privileges: data.privileges,
+    if (code != null) {
+      try {
+        const res = await fetch("http://localhost:8080/api/v0/user/me", {
+          method: "GET",
+          credentials: "include",
         });
+
+        if (res.ok) {
+          const data = await res.json();
+          console.log("====================================");
+          console.log(data);
+          console.log("====================================");
+          setUser({
+            id: data.id,
+            username: data.username,
+            roles: data.roles,
+            privileges: data.privileges,
+          });
+        }
+      } finally {
+        setLoading(false);
       }
-    } finally {
-      setLoading(false);
     }
   };
 
