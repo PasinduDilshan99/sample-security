@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 
 type LoginResponse = {
   message: string;
@@ -16,7 +17,8 @@ export default function Page() {
   const [password, setPassword] = useState<string>("");
   const [response, setResponse] = useState<LoginResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const route = useRouter()
+  const router = useRouter();
+  const { fetchMe } = useAuth();
 
   const handleLogin = async () => {
     try {
@@ -42,10 +44,13 @@ export default function Page() {
 
       sessionStorage.setItem("uniqueCode", data.uniqueCode);
 
+      await fetchMe();
+
       setResponse(data);
-      route.push("/dashboard")
+      router.push("/dashboard");
     } catch (err) {
       setError("Something went wrong");
+      console.error("Login error:", err);
     }
   };
 
