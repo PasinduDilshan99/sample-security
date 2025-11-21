@@ -14,6 +14,7 @@ type AuthContextType = {
   hasRole: (role: string) => boolean;
   hasPrivilege: (priv: string) => boolean;
   fetchMe: () => Promise<void>;
+  logout: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -22,6 +23,7 @@ const AuthContext = createContext<AuthContextType>({
   hasRole: () => false,
   hasPrivilege: () => false,
   fetchMe: async () => {},
+  logout: async () => {},
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -40,9 +42,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const res = await fetch("http://localhost:8080/api/v0/user/me", {
         method: "GET",
         credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
       });
 
       if (res.ok) {
@@ -66,20 +66,35 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  // ⭐ NEW LOGOUT FUNCTION HERE
+  const logout = async () => {
+    try {
+      await fetch("http://localhost:8080/api/v0/user/logout", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+      });
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
+
+    // Clear FE session
+    sessionStorage.removeItem("uniqueCode");
+    setUser(null);
+  };
+
   useEffect(() => {
     fetchMe();
   }, []);
 
-  const hasRole = (role: string) => {
-    return user?.roles?.includes(role) ?? false;
-  };
-
-  const hasPrivilege = (priv: string) => {
-    return user?.privileges?.includes(priv) ?? false;
-  };
+  const hasRole = (role: string) => user?.roles?.includes(role) ?? false;
+  const hasPrivilege = (priv: string) =>
+    user?.privileges?.includes(priv) ?? false;
 
   return (
-    <AuthContext.Provider value={{ user, loading, hasRole, hasPrivilege, fetchMe }}>
+    <AuthContext.Provider
+      value={{ user, loading, hasRole, hasPrivilege, fetchMe, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );
