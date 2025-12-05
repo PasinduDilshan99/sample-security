@@ -36,7 +36,7 @@ export default function Students() {
   if (loading) return <p>Loading...</p>;
 
   if (!hasPrivilege("READ_PRIVILEGE"))
-    return <p>🚫 You do not have permission to view students</p>;
+    return <p>You do not have permission to view students</p>;
 
   if (error) return <p className="text-red-500">Error: {error}</p>;
 

@@ -9,17 +9,14 @@ export async function POST(request: Request) {
       headers: {
         "Content-Type": "application/json",
       },
-      // 👇 forward cookies from browser -> backend
       credentials: "include",
       body: JSON.stringify({ username, password }),
     });
 
     const data = await backendResponse.json();
 
-    // Forward backend cookies to browser
     const res = NextResponse.json(data);
 
-    // ⏬ Copy Set-Cookie headers from Spring Boot to Next.js response
     const cookies = backendResponse.headers.getSetCookie();
     if (cookies) {
       cookies.forEach((cookie: string) => {

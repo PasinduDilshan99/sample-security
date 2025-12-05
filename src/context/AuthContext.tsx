@@ -32,9 +32,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // -----------------------
-  // LOGIN LOGIC (NEW)
-  // -----------------------
   const login = async (username: string, password: string) => {
     const response = await fetch("/api/login", {
       method: "POST",
@@ -50,18 +47,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const data = await response.json();
 
-    // Store session identifier (like before)
     sessionStorage.setItem("uniqueCode", data.uniqueCode);
 
-    // Fetch user after login
     await fetchMe();
 
-    return data; // allow login page to show any message if needed
+    return data;
   };
 
-  // -----------------------
-  // FETCH USER DETAILS
-  // -----------------------
   const fetchMe = async () => {
     const code = sessionStorage.getItem("uniqueCode");
 
@@ -98,9 +90,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  // -----------------------
-  // LOGOUT LOGIC
-  // -----------------------
+
   const logout = async () => {
     try {
       await fetch("http://localhost:8080/api/v0/user/logout", {

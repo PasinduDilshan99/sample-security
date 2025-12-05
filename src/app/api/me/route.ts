@@ -4,7 +4,7 @@ export async function GET() {
   try {
     const backendRes = await fetch("http://localhost:8080/api/v0/user/me", {
       method: "GET",
-      credentials: "include", // send auth-token + refresh-token
+      credentials: "include",
     });
 
     const data = await backendRes.json();
